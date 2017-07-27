@@ -30,7 +30,6 @@ ALLOWED_HOSTS = ['192.168.0.7', '127.0.0.1', '94.180.185.27' ,'188.234.5.210']
 # Application definition
 
 INSTALLED_APPS = [
-    'graphics.templatetags.extras',
     'graphics.apps.GraphicsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
