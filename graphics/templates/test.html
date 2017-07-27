@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Testing stuff here</title>
+	
+	<link rel="icon" href="{%static '\ico\favicon.ico' %}">
+    <!-- Bootstrap -->
+    <link href="{%static '\css\bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{%static '\css\bootstrap-theme.min.css' %}" rel="stylesheet">
+	</head>
+	
+  <body>
+	<ul class="nav nav-tabs" role="tablist">
+       <li role="presentation"><a href="/">To Start</a></li>
+	   <li role="presentation" class="active"><a href="/test/">Test</a></li>
+       <li role="presentation" ><a href="/about/">About</a></li>	   
+    </ul> 
+	
+	<div class="page-header">	      	
+			<div class = "row" >
+				<div class = "col-xs-8">
+					<h2 style = "margin-left:10%;">Page for testing some stuff...</h2>
+				</div>
+			</div>
+		</div>
+		
+	<div ng-component = "123">
+		 <script type="text/ng-template" id="alert.html">
+			<div ng-transclude></div>
+		 </script>
+
+		 <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert($index)">{{alert.msg}}</div>
+		 <div uib-alert template-url="alert.html" style="background-color:#fa39c3;color:white">A happy alert!</div>
+		 <button type="button" class='btn btn-default' ng-click="addAlert()">Add Alert</button>
+	</div>
+  </body>
+</html>

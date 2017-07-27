@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+{% load static %}
+{% load user_agents %}
+<html lang="en" ng-app='try'>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Graph App</title>
+	
+	<link rel="icon" href="{%static '\ico\favicon.ico' %}">
+    <!-- Bootstrap -->
+    <link href="{%static '\css\bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{%static '\css\bootstrap-theme.min.css' %}" rel="stylesheet">
+	<script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="{%static '\js\bootstrap.min.js' %}"></script>
+	<link href="{%static '\css\sticky-footer.css' %}" rel="stylesheet">
+	
+	<!-- Graph -->
+	<script src="{% static '\js\angular.min.js' %}"></script>
+	<script src="{% static '\js\chart.min.js' %}"></script>
+	<script src="{% static '\js\angular-chart.min.js' %}"></script>	
+	<script src="{% static '\js\chart\chart.js' %}"></script>
+		
+	<script src="{% static '\js\app\app.module.js' %}"></script>
+	<script src="{% static '\js\app\app.config.js' %}"></script>	
+	<script src="{% static '\js\line-graph\line-graph.module.js' %}"></script>
+	<script src="{% static '\js\line-graph\line-graph.component.js' %}"></script>
+	
+	<style>
+	  .container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;}
+	</style>
+  </head>
+	
+  <body>	 
+	  <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="/">To Start</a></li>
+	    <li role="presentation"><a href="/test/">Test</a></li>
+		<li role="presentation"><a href="/about/">About</a></li>	
+      </ul>
+	  
+		<div class="page-header">	      	
+				<div class = "row" >
+					<div class = "col-xs-4" ng-controller="LineCtrl">
+						<h2 style = "margin-left:10%;">		
+						<span ng-if='name'>[/ name /]</span>
+						<span ng-if='!name'>
+						{% if name %} Graph name: {{name}}  
+						{% elif error %} {{error}}
+						{% else %} Graph App {% endif %}
+						</span>
+						</h2>
+					</div>
+					
+					<form class="form-inline" method="POST" action="" enctype="multipart/form-data">{% csrf_token %}					
+						<div class = "col-xs-8">
+							<h6>
+								{% if mobile %}
+								<label for="file" class="btn btn-lg btn-primary col-xs-12" >Select file</label>		
+								<input type="file" name="file" required="xlsx" id="file" style="display:none;"/>	
+								<input type="text" class="form-control" placeholder="Name of graph" name="input" id="input1" style="height:48px;">		
+								<input type="submit" class="btn btn-lg btn-primary col-xs-12"" value="Upload"/>
+								
+								{%  else %}
+								<div class="btn-group pull-right" style = "margin-right:10%;">	
+									<label for="file" class="btn btn-lg btn-primary" >Select file</label>		
+									<input type="file" name="file" required="xlsx" id="file" style="display:none;"/>	
+									<input type="text" class="btn btn-lg btn-primary" placeholder="Name of graph" name="input" id="input1">		
+									<input type="submit" class="btn btn-lg btn-primary" value="Upload"/>						
+								</div>						
+								{% endif %}	
+								
+							</h6>
+						</div>
+					</form>
+				</div>		
+		</div>	
+		
+	<div class="col-lg-12 col-sm-12" style = "overflow:auto; padding-bottom:100px;">
+		<div class="well " >
+			<div class="row ">
+					<div class="col-lg-8 col-sm-12 col-lg-offset-2" id="line-chart" ng-controller="LineCtrl">			
+							<canvas chart-data="data" id="line" class="chart chart-line" 
+							chart-labels="labels" chart-series="series" chart-options="options" 
+							chart-dataset-override="datasetOverride" chart-click="onClick" chart-colors="colors"						>
+							</canvas>
+						{% if x != None and y != None %} [/change({{x}}, {{y}})/]{% endif %} 
+						{% with x=None%}{% endwith %} {%with y=None %}{% endwith %}			
+						<div >
+							<button type="button" class="label label-primary " ng-click="clear()">Clear</button>	
+							<button type="button" class="label label-primary pull-right" ng-click="randomize()">Randomize</button>			
+						</div>	
+						
+						<div class="btn-group" style = "display: flex;align-items: center;justify-content: center;height: 100%;"
+						role="group" aria-label="...">
+						   <div class="btn-group dropup"" role="group">
+							<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							  First Graph
+							  <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+							  <li class="dropdown-header"><strong>Choose the First Graph</strong></li>
+							  <li class="divider"></li>
+							  {% if obj_list %}
+								{% for obj in obj_list %}
+							  <li><a href="" ng-click="change({{obj.x}}, {{obj.y}});"  >{{obj.graph_name}}</a>		
+							  </li>
+								{% endfor %}
+							  {% else %}
+							  <li><a href="/">None</a></li>	
+							  {% endif %}
+							</ul>
+						  </div>
+						  
+						<div class="btn-group dropup"" role="group">
+							<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							  Second Graph
+							  <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li class="dropdown-header"><strong>Choose the Second Graph</strong></li>
+									<li class="divider"></li>
+										{% if obj_list %}
+										{% for obj in obj_list %}
+										 <li><a href="" ng-click="change1({{obj.x}}, {{obj.y}});"  >{{obj.graph_name}}</a></li>
+										{% endfor %}
+										 {% else %}
+										 <li><a href="/">None</a></li>	
+										 {% endif %}				
+							</ul>
+						  </div>						  
+						</div>					
+					</div>			
+				</div>
+			</div>		
+		</div>
+		
+	<div style = "position: absolute; bottom: 0;  width: 100%;"> 
+		<div class="container"> 
+				<ul>
+					<p>Created by <a href="https://vk.com/kam__rus">Kamalov Rustem</a> for university-practice.
+					Practice tasks described <a href="/about/"> here</a>.</p>
+					<p>	Used tech stack: 
+						<a href="https://www.djangoproject.com/">Django</a> for backend.
+						<a href="https://angular.io">Angular</a> and
+						<a href="http://jtblin.github.io/angular-chart.js/"> Angular-Chart</a> for graph.
+						<a href="http://getbootstrap.com">Bootstrap</a> for stylization.			
+						<strong>{% if mobile %} (Mobile {% else %} (PC {% endif %} version is using)</strong>						
+					</p>
+				</ul>
+		</div> 
+	</div>
+  </body>
+</html>
